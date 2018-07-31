@@ -66,7 +66,7 @@
                 </div>
             <%--分页信息--%>
         <div class="row">
-            <%--分页文字信息--%>
+
             <div class="col-md-6">
                 当前${pageInfo.pageNum}页,总${pageInfo.pages}页,总${pageInfo.total}条记录
             </div>

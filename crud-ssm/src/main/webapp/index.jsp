@@ -72,6 +72,7 @@
                 //1.解析并显示员工数据
                 build_emps_table(result);
                 //2.解析并显示分页信息
+                build_page_info(result);
             }
         });
     });
