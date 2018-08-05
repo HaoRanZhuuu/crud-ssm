@@ -140,7 +140,7 @@
     <div class="row">
         <div class="col-md-4 col-md-offset-8">
             <button class="btn btn-primary" id="emp_add_modal_btn">新增</button>
-            <button class="btn btn-danger">删除</button>
+            <button class="btn btn-danger" id="emp_delete_all_btn">删除</button>
         </div>
     </div>
     <%--表格数据--%>
@@ -149,6 +149,9 @@
         <table class="table table table-striped table table-hover" id="emps_table">
             <thead>
                 <tr>
+                    <th>
+                        <input type="checkbox" id="check_all"/>
+                    </th>
                     <th>#</th>
                     <th>empName</th>
                     <th>sex</th>
@@ -202,6 +205,7 @@
         $("#emps_table tbody").empty();
         var emps = result.extend.pageInfo.list;
         $.each(emps,function (index,item) {
+            var checkBoxTd = $("<td><input type='checkbox' class='check_item'/></td>");
             var empIdTd = $("<td></td>").append(item.empId);
             var empNameTd = $("<td></td>").append(item.empName);
             var sexTd = $("<td></td>").append(item.sex =='M'?"男":"女");
@@ -213,8 +217,10 @@
            editBtn.attr("edit-id",item.empId);
             var delBtn = $("<button></button>").addClass("btn btn-danger btn-sm delete_btn")
                                                  .append($("<span></span>").addClass("glyphicon glyphicon-trash")).append("删除");
+            delBtn.attr("del-id",item.empId);
             var btnTD =  $("<td></td>").append(editBtn).append(" ").append(delBtn);
-            $("<tr></tr>").append(empIdTd)
+            $("<tr></tr>").append(checkBoxTd)
+                           .append(empIdTd)
                            .append(empNameTd)
                            .append(sexTd)
                            .append(emailTd)
@@ -409,6 +415,21 @@
             }
         });
     });
+    
+    $(document).on("click",".delete_btn",function () {
+        var empName = $(this).parents("tr").find("td:eq(2)").text();
+        var empId = $(this).attr("del-id");
+        if (confirm("确认删除【"+empName+"】吗？")){
+            $.ajax({
+                url:"/emp/"+empId,
+                type:"delete",
+                success:function (result) {
+                    alert(result.msg);
+                    to_page(currentNum)
+                }
+            });
+        }
+    });
     $(document).on("click",".edit_btn",function () {
 
         getDepts("#empUpdateModal select");
@@ -459,6 +480,37 @@
                 to_page(currentNum);
             }
         });
+    });
+
+    $("#check_all").click(function () {
+        $(".check_item").prop("checked",$(this).prop("checked"));
+    });
+    
+    $(document).on("click",".check_item",function () {
+        var flag;
+        flag = $(".check_item:checked").length==$(".check_item").length;
+        $("#check_all").prop("checked",flag);
+    });
+
+    $("#emp_delete_all_btn").click(function () {
+        var empNames = "";
+        var empIds = "";
+        $.each($(".check_item:checked"),function () {
+            empNames += $(this).parents("tr").find("td:eq(2)").text()+",";
+            empIds += $(this).parents("tr").find("td:eq(1)").text()+"-";
+        });
+        empNames = empNames.substring(0,empNames.length-1);
+        empIds = empIds.substring(0,empIds.length-1);
+        if (confirm("确认删除【"+empNames+"】吗？")){
+            $.ajax({
+                url:"/emp/"+empIds,
+                type:"delete",
+                success:function (result) {
+                    alert(result.msg);
+                    to_page(currentNum);
+                }
+            });
+        }
     });
 </script>
 </body>

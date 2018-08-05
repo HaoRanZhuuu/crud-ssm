@@ -41,8 +41,6 @@ public class MVCTest {
                 .andReturn();
         MockHttpServletRequest request = result.getRequest();
         PageInfo pageInfo = (PageInfo) request.getAttribute("pageInfo");
-        System.out.println(pageInfo.getPageNum());
-        System.out.println(pageInfo.getPages());
-        System.out.println(pageInfo.getTotal());
+
     }
 }
